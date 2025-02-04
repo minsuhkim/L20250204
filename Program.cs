@@ -33,9 +33,49 @@
 
         static void Print(int[] deck)
         {
-            for(int i=0; i<8; i++)
+            int computerScore = GetCardNumber(deck[0]) + GetCardNumber(deck[1]) + GetCardNumber(deck[2]);
+            int playerScore = GetCardNumber(deck[3]) + GetCardNumber(deck[4]) + GetCardNumber(deck[5]);
+
+            Console.WriteLine("컴퓨터가 뽑은 카드");
+            for(int i=0; i<3; i++)
             {
                 Console.WriteLine($"{CheckCardType(deck[i])} {CheckCardName(deck[i])}" );
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("플레이어가 뽑은 카드");
+            for (int i = 3; i < 6; i++)
+            {
+                Console.WriteLine($"{CheckCardType(deck[i])} {CheckCardName(deck[i])}");
+            }
+            Console.WriteLine();
+
+            Console.WriteLine($"Computer Score: {computerScore} / Player Score: {playerScore}");
+            Console.WriteLine();
+
+            Verdict(computerScore, playerScore);
+        }
+
+        static void Verdict(int computerScore, int playerScore)
+        {
+            if (computerScore > 21)
+            {
+                Console.WriteLine("Player Win!");
+            }
+            else if (playerScore > 21)
+            {
+                Console.WriteLine("Computer Win!");
+            }
+            else
+            {
+                if (computerScore > playerScore)
+                {
+                    Console.WriteLine("Computer Win!");
+                }
+                else
+                {
+                    Console.WriteLine("Player Win!");
+                }
             }
         }
 
@@ -65,7 +105,15 @@
             return cardName;            
         }
 
-
+        static int GetCardNumber(int cardNumber)
+        {
+            int cardValue = (cardNumber - 1) % 13 + 1;
+            if(cardValue > 10)
+            {
+                cardValue = 10;
+            }
+            return cardValue;
+        }
 
         static void Main(string[] args)
         {
@@ -79,5 +127,6 @@
             Shuffle(deck);
             Print(deck);
         }
+    
     }
 }
