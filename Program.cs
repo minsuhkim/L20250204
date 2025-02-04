@@ -2,58 +2,104 @@
 {
     internal class Program
     {
-        enum CardType
-        {
-            None = -1,
-            Heart,
-            Diamond,
-            Clover,
-            Spade
-        }
-
-        static CardType CheckCardType(int cardNumber)
-        {
-            int valueType = (cardNumber - 1) / 13;
-            return (CardType)valueType;
-        }
-
-        static void Initialize(int[] deck)
+        static int[] deck = new int[52];
+        static int[] playerPicks = new int[3];
+        static int[] enemyPicks = new int[3];
+        static void Initialize()
         {
             for (int i = 0; i < deck.Length; i++)
             {
                 deck[i] = i + 1;
             }
         }
-
-        static void Shuffle(int[] deck)
+        
+        static void Shuffle()
         {
             Random random = new Random();
             random.Shuffle(deck);
         }
 
-        static void Print(int[] deck)
+        static string CheckCardShape(int pickNum)
         {
-            int computerScore = GetCardNumber(deck[0]) + GetCardNumber(deck[1]) + GetCardNumber(deck[2]);
-            int playerScore = GetCardNumber(deck[3]) + GetCardNumber(deck[4]) + GetCardNumber(deck[5]);
-
-            Console.WriteLine("컴퓨터가 뽑은 카드");
-            for(int i=0; i<3; i++)
+            string shape = "";
+            if ((pickNum - 1) / 13 == 0)
             {
-                Console.WriteLine($"{CheckCardType(deck[i])} {CheckCardName(deck[i])}" );
+                shape = "Heart";
             }
-            Console.WriteLine();
-
-            Console.WriteLine("플레이어가 뽑은 카드");
-            for (int i = 3; i < 6; i++)
+            else if ((pickNum - 1) / 13 == 1)
             {
-                Console.WriteLine($"{CheckCardType(deck[i])} {CheckCardName(deck[i])}");
+                shape = "Diamond";
             }
-            Console.WriteLine();
+            else if ((pickNum - 1) / 13 == 2)
+            {
+                shape = "Clover";
+            }
+            else if ((pickNum - 1) / 13 == 3)
+            {
+                shape = "Spade";
+            }
 
-            Console.WriteLine($"Computer Score: {computerScore} / Player Score: {playerScore}");
-            Console.WriteLine();
+            return shape;
+        }
 
-            Verdict(computerScore, playerScore);
+        static string CheckCardNumber(int pickNum)
+        {
+            int number = (pickNum - 1) % 13 + 1;
+            string cardNumber = "";
+
+            if (number >=2 && number <= 10)
+            {
+                cardNumber = number.ToString();
+            }
+            //아니면 모양 출력
+            else
+            {
+                if (number == 1)
+                {
+                    cardNumber = "A";
+                }
+                else if (number == 11)
+                {
+                    cardNumber = "J";
+                }
+                else if (number == 12)
+                {
+                    cardNumber = "Q";
+                }
+                else if (number == 13)
+                {
+                    cardNumber = "K";
+                }
+            }
+
+            return cardNumber;
+        }
+
+        static int GetCardNumber(int pickNum)
+        {
+            int number = (pickNum - 1) % 13 + 1;
+
+            if(number > 10)
+            {
+                number = 10;
+            }
+
+            return number;
+        }
+
+        static void PrintCard(int pickNum)
+        {
+            Console.WriteLine($"{CheckCardShape(pickNum)} {CheckCardNumber(pickNum)}");           
+        }
+
+        static void PickCard()
+        {
+            playerPicks[0] = deck[0];
+            playerPicks[1] = deck[1];
+            playerPicks[2] = deck[2];
+            enemyPicks[0] = deck[3];
+            enemyPicks[1] = deck[4];
+            enemyPicks[2] = deck[5];
         }
 
         static void Verdict(int computerScore, int playerScore)
@@ -79,54 +125,40 @@
             }
         }
 
-        static string CheckCardName(int cardNumber)
+        static void PrintScore()
         {
-            int cardValue = (cardNumber - 1) % 13 + 1;
-            string cardName;
+            int enemyScore = GetCardNumber(enemyPicks[0]) + GetCardNumber(enemyPicks[1]) + GetCardNumber(enemyPicks[2]);
+            int playerScore = GetCardNumber(playerPicks[0]) + GetCardNumber(playerPicks[1]) + GetCardNumber(playerPicks[2]);
 
-            switch (cardValue)
-            {
-                case 1:
-                    cardName = "A";
-                    break;
-                case 11: 
-                    cardName = "J";
-                    break;
-                case 12:
-                    cardName= "Q";
-                    break;
-                case 13:
-                    cardName = "K";
-                    break;
-                default:
-                    cardName = cardValue.ToString();
-                    break;
-            }
-            return cardName;            
-        }
+            Console.WriteLine("Computer Cards");
+            PrintCard(enemyPicks[0]);
+            PrintCard(enemyPicks[1]);
+            PrintCard(enemyPicks[2]);
+            Console.WriteLine("--------------------------");
 
-        static int GetCardNumber(int cardNumber)
-        {
-            int cardValue = (cardNumber - 1) % 13 + 1;
-            if(cardValue > 10)
-            {
-                cardValue = 10;
-            }
-            return cardValue;
+            Console.WriteLine("Player Cards");
+            PrintCard(playerPicks[0]);
+            PrintCard(playerPicks[1]);
+            PrintCard(playerPicks[2]);
+            Console.WriteLine("--------------------------");
+
+            Console.WriteLine($"Computer Score: {enemyScore} / Player Score: {playerScore}");
+
+            Verdict(enemyScore, playerScore);
         }
 
         static void Main(string[] args)
         {
-            // 1-13 >> Heart 1 A 2~10은 숫자 11 J 12 Q 13 K
+            // 1-13 >> Heart 
             // 14-26 >> Diamond 
             // 27-39 >> Clover
             // 40-52 >> Spade
-            int[] deck = new int[52];
+            //1 A 2~10은 숫자 11 J 12 Q 13 K
 
-            Initialize(deck);
-            Shuffle(deck);
-            Print(deck);
+            Initialize();
+            Shuffle();
+            PickCard();
+            PrintScore();
         }
-    
     }
 }
